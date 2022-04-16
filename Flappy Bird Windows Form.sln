@@ -5,21 +5,86 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flappy Bird Windows Form", "Flappy Bird Windows Form\Flappy Bird Windows Form.csproj", "{F3908C2B-2236-42F0-B74B-AD6060814F86}"
 EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F3908C2B-2236-42F0-B74B-AD6060814F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3908C2B-2236-42F0-B74B-AD6060814F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3908C2B-2236-42F0-B74B-AD6060814F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3908C2B-2236-42F0-B74B-AD6060814F86}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {96064407-EAB8-4EF7-9C74-55EDE908958E}
-	EndGlobalSection
-EndGlobal
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Flappy_Bird_Windows_Form
+{
+    public partial class FlappyBird : Form
+    {
+        int pipespeed = 8;
+        int gravity = 5;
+        int score = 0;
+
+        public FlappyBird()
+        {
+            InitializeComponent();
+        }
+
+        private void GameTimerEvent(object sender, EventArgs e)
+        {
+            Bird.Top += gravity;
+            pipedown.Left -= pipespeed;
+            pipeabove.Left -= pipespeed;
+            Score.Text = "Score:"  +  score;
+
+            if (pipedown.Left < -150)
+            {
+                pipedown.Left = 584;
+                score++;
+            }
+            if(pipeabove.Left < -180)
+            {
+                pipeabove.Left = 650;
+                score++;
+            }
+
+            if(Bird.Bounds.IntersectsWith(pipeabove.Bounds) || 
+                Bird.Bounds.IntersectsWith(pipedown.Bounds) ||
+                Bird.Bounds.IntersectsWith(Ground.Bounds) || Bird.Top < -25
+               )
+            {
+                endGame();
+            }
+
+            if(score > 5)
+            {
+                pipespeed = 15;
+            }
+            
+        }
+
+        private void gamekeyisdown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space){
+                gravity = -5;
+            }
+
+        }
+
+        private void gamekeyup(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                gravity = 5;
+            }
+
+        }
+            
+        private void endGame()
+        {
+            GameTimer.Stop();
+            Score.Text += "The End";
+        }
+    
+    
+    }
+}
+
